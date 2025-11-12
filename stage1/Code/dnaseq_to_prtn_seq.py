@@ -9,84 +9,97 @@ Original file is located at
 Write a python function for translating DNA to protein
 """
 
-codons = {  #Codon table as dictionary
-"UUU" : "F",
-"CUU" : "L",
-"AUU" : "I",
-"GUU" : "V",
-"UUC" : "F",
-"CUC" : "L",
-"AUC" : "I",
-"GUC" : "V",
-"UUA" : "L",
-"CUA" : "L",
-"AUA" : "I",
-"GUA" : "V",
-"UUG" : "L",
-"CUG" : "L",
-"AUG" : "M",
-"GUG" : "V",
-"UCU" : "S",
-"CCU" : "P",
-"ACU" : "T",
-"GCU" : "A",
-"UCC" : "S",
-"CCC" : "P",
-"ACC" : "T",
-"GCC" : "A",
-"UCA" : "S",
-"CCA" : "P",
-"ACA" : "T",
-"GCA" : "A",
-"UCG" : "S",
-"CCG" : "P",
-"ACG" : "T",
-"GCG" : "A",
-"UAU" : "Y",
-"CAU" : "H",
-"AAU" : "N",
-"GAU" : "D",
-"UAC" : "Y",
-"CAC" : "H",
-"AAC" : "N",
-"GAC" : "D",
-"UAA" : "Stop",
-"CAA" : "Q",
-"AAA" : "K",
-"GAA" : "E",
-"UAG" : "Stop",
-"CAG" : "Q",
-"AAG" : "K",
-"GAG" : "E",
-"UGU" : "C",
-"CGU" : "R",
-"AGU" : "S",
-"GGU" : "G",
-"UGC" : "C",
-"CGC" : "R",
-"AGC" : "S",
-"GGC" : "G",
-"UGA" : "Stop",
-"CGA" : "R",
-"AGA" : "R",
-"GGA" : "G",
-"UGG" : "W",
-"CGG" : "R",
-"AGG" : "R",
-"GGG" : "G"
-}
+def Dna_protein(Dna_seq):
+  nuc_set={"A","T","G","C"}
+  codons = {  #Codon table as dictionary
+  "UUU" : "F",
+  "CUU" : "L",
+  "AUU" : "I",
+  "GUU" : "V",
+  "UUC" : "F",
+  "CUC" : "L",
+  "AUC" : "I",
+  "GUC" : "V",
+  "UUA" : "L",
+  "CUA" : "L",
+  "AUA" : "I",
+  "GUA" : "V",
+  "UUG" : "L",
+  "CUG" : "L",
+  "AUG" : "M",
+  "GUG" : "V",
+  "UCU" : "S",
+  "CCU" : "P",
+  "ACU" : "T",
+  "GCU" : "A",
+  "UCC" : "S",
+  "CCC" : "P",
+  "ACC" : "T",
+  "GCC" : "A",
+  "UCA" : "S",
+  "CCA" : "P",
+  "ACA" : "T",
+  "GCA" : "A",
+  "UCG" : "S",
+  "CCG" : "P",
+  "ACG" : "T",
+  "GCG" : "A",
+  "UAU" : "Y",
+  "CAU" : "H",
+  "AAU" : "N",
+  "GAU" : "D",
+  "UAC" : "Y",
+  "CAC" : "H",
+  "AAC" : "N",
+  "GAC" : "D",
+  "UAA" : "Stop",
+  "CAA" : "Q",
+  "AAA" : "K",
+  "GAA" : "E",
+  "UAG" : "Stop",
+  "CAG" : "Q",
+  "AAG" : "K",
+  "GAG" : "E",
+  "UGU" : "C",
+  "CGU" : "R",
+  "AGU" : "S",
+  "GGU" : "G",
+  "UGC" : "C",
+  "CGC" : "R",
+  "AGC" : "S",
+  "GGC" : "G",
+  "UGA" : "Stop",
+  "CGA" : "R",
+  "AGA" : "R",
+  "GGA" : "G",
+  "UGG" : "W",
+  "CGG" : "R",
+  "AGG" : "R",
+  "GGG" : "G"
+  }
+
+  dna_seq_set=set(Dna_seq)
+  if dna_seq_set == nuc_set:
+    rna_seq=Dna_seq.replace("T","U")
+    protein=""
+    if len(rna_seq)%3==0:
+      print("NO trimming required")
+      for i in range(0,len(rna_seq),3):
+        codon=rna_seq[i:i+3]
+        protein+=codons[codon]
+      print(protein)
+    else:
+      print("Trimming the sequence")
+      rna_seq_alt=rna_seq[0:len(rna_seq)-len(rna_seq)%3]
+      for i in range(0,len(rna_seq_alt),3):
+        codon=rna_seq_alt[i:i+3]
+        protein+=codons[codon]
+      print(protein)
+  else:
+    print("Invalid sequence")
+
+
+
+
 Dna_seq="AGAAGTGAGTTTTGGATAGTAAAATAAGTTTCGAACTCTGGCACCTTTCAATTTTGTCGCACTCTCCTTG"
-rna_seq=Dna_seq.replace("T","U")
-protein=""
-if len(rna_seq)%3==0:
-  print("NO trimming required")
-  for i in range(0,len(rna_seq),3):
-    codon=rna_seq[i:i+3]
-    protein+=codons[codon]
-  print(protein)
-else:
-  rna_seq_alt=rna_seq[0:len(rna_seq)-len(rna_seq)%3]
-  for i in range(0,len(rna_seq_alt),3):
-    codon=rna_seq_alt[i:i+3]
-    protein+=codons[codon]
-  print(protein)
+Dna_protein(Dna_seq)
