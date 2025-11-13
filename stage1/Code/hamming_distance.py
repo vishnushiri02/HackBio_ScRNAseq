@@ -18,13 +18,8 @@ def hamming_dist(sla_name,twi_name):  #Function to calculate the hamming distanc
     for i in range(len(sla_list)):
       if sla_list[i]!=twi_list[i]:    #comparing the list elementwise
         missmatch+=1
-  #else:
-  #  print("The strings are of different size")
-  #  print("Padding and making the strings to same size")
-  #  max_length=max(len(sla_list),len(twi_list))
-  #  sla_list+=["X"]*(max_length-len(sla_list))  #Making the lists of same size by padding letters
-  #  twi_list+=["X"]*(max_length-len(twi_list))
-  #  hamming_dist(sla_list,twi_list)
+  else:
+    print("The strings are of different size")
 
   return missmatch
 

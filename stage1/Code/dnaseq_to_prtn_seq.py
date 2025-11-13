@@ -9,8 +9,56 @@ Original file is located at
 Write a python function for translating DNA to protein
 """
 
-def Dna_protein(Dna_seq):
-  nuc_set={"A","T","G","C"}
+"""
+1. The program takes input DNA sequence
+2. Converts it into rna sequence
+3. Compiles the 3 forward reading frames of the sequence
+4. Checks if the length of each reading frame considered is divisible by 3,
+if not trims the sequence accordingly
+5. open reading frames are compiled from the processed reads
+6. These open reading frames are then translated
+7. Longest among the translated the sequence is the protein sequence output
+"""
+
+def reading_frames(rna_seq):
+  possible_proteins=[]
+  reading_frames=[]
+  reading_frames.append(rna_seq)  #Reading frame 1
+  reading_frames.append(rna_seq[1:])  #Reading frame 2
+  reading_frames.append(rna_seq[2:])  #Reading frame 3
+  for i in range(len(reading_frames)):
+    print(f"Processing the reading frame {i}")
+    protein_seq=rna_processing(reading_frames[i])
+    possible_proteins.extend(orf(protein_seq))
+    print("***************************************")
+  return(possible_proteins)
+
+def orf(rna_processed_seq):
+  #print(f"Processing sequence {len(rna_processed_seq)}")
+  orf_list=[]
+  for i in range(0,len(rna_processed_seq),3):
+    codon=rna_processed_seq[i:i+3]  # considering 3 nucleotides at an instance
+    if codon=="AUG":    #if the substr considered is start codon enter the loop block
+      print(f"AUG found at {i}")
+      stop_found=False
+      j=i+3
+      orf=codon
+      while stop_found==False and j+3<=len(rna_processed_seq):
+        if rna_processed_seq[j:j+3] in ["UAA","UAG","UGA"] :
+          orf+=rna_processed_seq[j:j+3]
+          stop_found=True
+          orf_list.append(orf)
+          print(f"Stop codon found {j}")
+        else:
+          orf+=rna_processed_seq[j:j+3]
+          j+=3
+      if stop_found==False:
+        orf=""
+  print(f"Number of open reading frame in this reading frame is {len(orf_list)}")
+  return(orf_list)
+
+
+def translation(rna_seq):
   codons = {  #Codon table as dictionary
   "UUU" : "F",
   "CUU" : "L",
@@ -78,28 +126,44 @@ def Dna_protein(Dna_seq):
   "GGG" : "G"
   }
 
-  dna_seq_set=set(Dna_seq)
-  if dna_seq_set == nuc_set:
-    rna_seq=Dna_seq.replace("T","U")
-    protein=""
-    if len(rna_seq)%3==0:
-      print("NO trimming required")
-      for i in range(0,len(rna_seq),3):
-        codon=rna_seq[i:i+3]
-        protein+=codons[codon]
-      print(protein)
-    else:
-      print("Trimming the sequence")
-      rna_seq_alt=rna_seq[0:len(rna_seq)-len(rna_seq)%3]
-      for i in range(0,len(rna_seq_alt),3):
-        codon=rna_seq_alt[i:i+3]
-        protein+=codons[codon]
-      print(protein)
+  protein_seq=""
+  for i in range(0,len(rna_seq),3):
+    codon=rna_seq[i:i+3]
+    protein_seq+=codons[codon]
+  return(protein_seq)
+
+
+def rna_processing(rna_seq):
+  if len(rna_seq)%3==0:
+    print("NO trimming required")
+    #protein=translation(rna_seq)
   else:
-    print("Invalid sequence")
+    print("Trimming the sequence")
+    rna_seq=rna_seq[0:len(rna_seq)-len(rna_seq)%3]
+    #protein=translation(rna_seq_alt)
+  return(rna_seq)
+
+
+def Dna_translation(Dna_seq):
+  nuc_set={"A","T","G","C"}
+  dna_seq_set=set(Dna_seq)
+  if dna_seq_set == nuc_set: #checking if the DNA seq is valid
+    rna_seq=Dna_seq.replace("T","U")  #converting DNA seq to RNA seq
+    possible_proteins=reading_frames(rna_seq)
+    possible_protein_seq=[]
+    for i in possible_proteins:
+      if len(i) !=0:
+        possible_protein_seq.append(translation(i))
+    if len(possible_protein_seq)==0:
+      protein="No protein found"
+    else:
+      protein=max(possible_protein_seq,key=len)
+  else:
+    protein="Invalid sequence"
+  return(protein)
 
 
 
 
-Dna_seq="AGAAGTGAGTTTTGGATAGTAAAATAAGTTTCGAACTCTGGCACCTTTCAATTTTGTCGCACTCTCCTTG"
-Dna_protein(Dna_seq)
+Dna_seq="ATGGAGGGCCATGTCAAGCGCCCCATGAATGCATTTATGGTGTGGTCCCGTGGTGAGAGGCACAAGTTGGCCCAGCAGAATCCCAGCATGCAAAATACAGAGATCAGCAAGCAGCTGGGATGCAGGTGGAAAAGCCTTACAGAAGCCGAAAAAAGGCCCTTTTTCCAGGAGGCACAGAGATTGAAGATCCTACACAGAGAGAAATACCCAAACTATAAATATCAGCCTCATCGGAGGGCTAAAGTGTCACAGAGGAGTGGCATTTTACAGCCTGCAGTTGCCTCAACAAAACTGTACAACCTTCTGCAGTGGGACAGGAACCCACATGCCATCACATACAGGCAAGACTGGAGTAGAGCTGCACACCTGTACTCCAAAAACCAGCAAAGCTTTTATTGGCAGCCTGTTGATATCCCCACTGGGCACCTGCAGCAGCAGCAGCAGCAGCAGCAGCAGCAGCAGTTCCATAACCACCACCAGCAGCAACAGCAGTTCTATGACCACCACCAGCAGCAGCAGCAGCAGCAGCAGCAGCAGCAGCAGTTCCATGACCACCACCAGCAGAAGCAGCAGTTTCATGACCACCACCAGCAGCAACAGCAGTTCCATGACCACCACCACCACCACCAGGAGCAGCAGTTCCATGACCACCACCAGCAGCAACAGCAGTTCCATGACCACCAGCAGCAGCAGCAGCAGCAGCAGCAGCAGCAGTTCCATGACCACCACCAGCAGAAGCAGCAGTTCCATGACCACCACCACCACCAACAGCAGCAGCAGTTCCATGACCACCAGCAGCAGCAGCAGCAGTTCCATGACCACCAGCAGCAGCAGCATCAGTTCCATGACCACCCCCAGCAGAAGCAGCAGTTCCATGACCACCCCCAGCAGCAACAGCAGTTCCATGACCACCACCACCAGCAGCAGCAGAAGCAGCAGTTCCATGACCACCACCAGCAGAAGCAGCAGTTCCATGACCACCACCAGCAGAAGCAGCAGTTCCATGACCACCACCAGCAGCAACAGCAGTTCCATGACCACCACCAGCAGCAGCAGCAGCAGCAGCAGCAGCAGCAGCAGCAGTTCCACGACCAGCAGCTTACCTACTTACTAACAGCTGACATCACTGGTGAGCATACACCATACCAGGAGCACCTCAGCACAGCCCTGTGGTTGGCAGTCTCATGA"
+print(Dna_translation(Dna_seq))
